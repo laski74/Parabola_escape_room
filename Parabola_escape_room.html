@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔐 Escape Room Matematica – Disattiva AI-Parabola</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] },
+  startup: { typeset: true }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080818;--card:rgba(14,14,34,.92);--cyan:#00e5ff;--green:#00ff41;--red:#ff3366;
+--orange:#ff9100;--purple:#b388ff;--txt:#e0e0e0;--mut:#8888aa;--brd:#2a2a4a}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;
+background-image:radial-gradient(circle at 20% 40%,rgba(0,229,255,.04) 0%,transparent 40%),
+radial-gradient(circle at 80% 60%,rgba(179,136,255,.04) 0%,transparent 40%),
+linear-gradient(rgba(0,229,255,.015) 1px,transparent 1px),
+linear-gradient(90deg,rgba(0,229,255,.015) 1px,transparent 1px);
+background-size:100%,100%,60px 60px,60px 60px;overflow-x:hidden}
+
+.hdr{position:fixed;top:0;left:0;right:0;height:58px;z-index:100;
+background:rgba(8,8,24,.96);border-bottom:1px solid var(--brd);
+display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+backdrop-filter:blur(12px)}
+.hdr .brand{font-family:'Orbitron',monospace;font-size:.85rem;color:var(--cyan);letter-spacing:2px}
+.hdr .dots{display:flex;gap:10px}
+.dot{width:14px;height:14px;border-radius:50%;background:#1a1a2e;border:2px solid var(--brd);transition:.3s}
+.dot.done{background:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(0,255,65,.4)}
+.dot.on{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.4);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 4px rgba(0,229,255,.4)}50%{box-shadow:0 0 14px rgba(0,229,255,.7)}}
+.clock{font-family:'Share Tech Mono',monospace;font-size:1.35rem;color:var(--green);
+text-shadow:0 0 8px rgba(0,255,65,.3);min-width:80px;text-align:right}
+.clock.w{color:var(--orange);text-shadow:0 0 8px rgba(255,145,0,.3)}
+.clock.c{color:var(--red);animation:blink .8s infinite}
+@keyframes blink{50%{opacity:.35}}
+.team-badge{font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--purple);
+background:rgba(179,136,255,.08);padding:4px 12px;border-radius:6px;border:1px solid rgba(179,136,255,.2)}
+
+.sc{display:none;min-height:100vh;padding:76px 18px 30px}
+.sc.on{display:flex;flex-direction:column;align-items:center;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--card);border:1px solid var(--brd);border-radius:16px;
+padding:26px;width:100%;max-width:1120px;margin:10px auto}
+
+.et{font-family:'Orbitron',monospace;font-size:1.3rem;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;
+border-radius:10px;font-size:1rem;font-weight:900}
+.b-cy{background:rgba(0,229,255,.12);color:var(--cyan);border:2px solid var(--cyan)}
+.b-pu{background:rgba(179,136,255,.12);color:var(--purple);border:2px solid var(--purple)}
+.b-or{background:rgba(255,145,0,.12);color:var(--orange);border:2px solid var(--orange)}
+.b-rd{background:rgba(255,51,102,.12);color:var(--red);border:2px solid var(--red)}
+.b-gr{background:rgba(0,255,65,.12);color:var(--green);border:2px solid var(--green)}
+
+.narr{border-left:3px solid var(--brd);background:rgba(0,0,0,.2);padding:12px 16px;
+border-radius:0 8px 8px 0;line-height:1.7;color:var(--mut);font-size:1.02rem;margin-bottom:16px}
+.eq-box{background:rgba(0,0,0,.25);border:1px solid #333;border-radius:10px;
+padding:14px;text-align:center;font-size:1.15rem;margin:12px 0}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media(max-width:960px){.cols{grid-template-columns:1fr}}
+
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{color:var(--mut);font-weight:600;font-size:.9rem}
+.fld input[type="text"],.fld select{background:rgba(0,0,0,.35);border:2px solid var(--brd);
+border-radius:10px;padding:10px 14px;color:var(--txt);font-family:'Share Tech Mono',monospace;
+font-size:1.1rem;outline:none;transition:.3s;width:100%}
+.fld input:focus,.fld select:focus{border-color:var(--cyan);box-shadow:0 0 12px rgba(0,229,255,.15)}
+.fr{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0;align-items:flex-end}
+
+.btn{padding:12px 24px;border:none;border-radius:10px;font-family:'Orbitron',monospace;
+font-size:.88rem;font-weight:700;cursor:pointer;transition:.25s;text-transform:uppercase;letter-spacing:1px}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(0)}
+.btn-cy{background:linear-gradient(135deg,#00e5ff,#0091ea);color:#000}
+.btn-cy:hover{box-shadow:0 4px 18px rgba(0,229,255,.4)}
+.btn-gr{background:linear-gradient(135deg,#00ff41,#00c853);color:#000}
+.btn-gr:hover{box-shadow:0 4px 18px rgba(0,255,65,.4)}
+.btn-rd{background:linear-gradient(135deg,#ff3366,#d50000);color:#fff}
+.btn-gh{background:transparent;border:2px solid var(--orange);color:var(--orange);padding:9px 16px;font-size:.78rem}
+.btn-gh:hover{background:rgba(255,145,0,.08)}
+.btn-big{font-size:1rem;padding:14px 32px}
+.btn:disabled{opacity:.4;pointer-events:none}
+.acts{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;align-items:center}
+
+.opts{display:flex;flex-direction:column;gap:9px;margin:14px 0}
+.opt{display:flex;align-items:center;gap:12px;padding:13px 16px;background:rgba(0,0,0,.2);
+border:2px solid var(--brd);border-radius:12px;cursor:pointer;transition:.3s;font-size:1.02rem;user-select:none}
+.opt:hover{border-color:#5a5a8a}
+.opt.sel{border-color:var(--cyan);background:rgba(0,229,255,.04)}
+.opt.ok{border-color:var(--green)!important;background:rgba(0,255,65,.07)!important}
+.opt.no{border-color:var(--red)!important;background:rgba(255,51,102,.07)!important;opacity:.6}
+.opt input[type="checkbox"],.opt input[type="radio"]{appearance:none;-webkit-appearance:none;
+width:22px;height:22px;border:2px solid #5a5a8a;border-radius:5px;cursor:pointer;flex-shrink:0;position:relative;background:transparent}
+.opt input[type="radio"]{border-radius:50%}
+.opt input:checked{background:var(--cyan);border-color:var(--cyan)}
+.opt input[type="checkbox"]:checked::after{content:'✓';position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);color:#000;font-weight:bold;font-size:13px}
+.opt input[type="radio"]:checked::after{content:'';position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);width:8px;height:8px;background:#000;border-radius:50%}
+
+.fb{padding:12px 16px;border-radius:10px;display:none;align-items:center;gap:8px;
+font-size:1rem;font-weight:600;margin:8px 0;line-height:1.6}
+.fb.show{display:flex}.fb.ok{background:rgba(0,255,65,.08);border:1px solid rgba(0,255,65,.25);color:var(--green)}
+.fb.err{background:rgba(255,51,102,.08);border:1px solid rgba(255,51,102,.25);color:var(--red)}
+.fb.hint{background:rgba(255,145,0,.06);border:1px solid rgba(255,145,0,.2);color:var(--orange)}
+
+.sol{background:rgba(0,255,65,.03);border:1px solid rgba(0,255,65,.15);border-radius:12px;
+padding:20px;margin:16px 0;display:none}
+.sol.show{display:block;animation:fadeUp .4s ease}
+.sol h4{font-family:'Orbitron',monospace;color:var(--green);margin-bottom:10px;font-size:.9rem}
+.sol .stp{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.8;font-size:1rem}
+.sol .stp:last-child{border-bottom:none}
+
+canvas.graph{border-radius:10px;background:rgba(0,0,0,.3);border:1px solid var(--brd);max-width:100%;display:block;margin:0 auto}
+
+.intro{text-align:center;max-width:860px}
+.intro .icon{font-size:3.8rem;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(0,229,255,.3))}
+.intro h1{font-family:'Orbitron',monospace;font-size:2rem;color:var(--cyan);
+text-shadow:0 0 30px rgba(0,229,255,.25);margin-bottom:4px}
+.intro .sub{font-family:'Orbitron',monospace;font-size:.95rem;color:var(--red);letter-spacing:3px;margin-bottom:22px}
+.intro .brief{text-align:left;line-height:1.8;color:var(--mut);font-size:1.02rem;margin-bottom:22px;
+background:rgba(0,0,0,.2);padding:18px;border-radius:12px;border:1px solid var(--brd)}
+.intro .setup{display:flex;gap:18px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin:22px 0}
+.intro .setup .fld input,.intro .setup .fld select{text-align:center;min-width:200px}
+
+.vic{text-align:center;max-width:800px}
+.vic h1{font-family:'Orbitron',monospace;font-size:2.2rem;color:var(--green);
+text-shadow:0 0 40px rgba(0,255,65,.3);margin-bottom:10px}
+.vic .sub2{font-size:1.1rem;color:var(--mut);margin-bottom:22px;line-height:1.7}
+.stats{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin:22px 0}
+.stat{background:rgba(0,0,0,.3);border:1px solid var(--brd);border-radius:12px;padding:16px 26px;text-align:center}
+.stat .val{font-family:'Share Tech Mono',monospace;font-size:1.8rem;color:var(--cyan)}
+.stat .lbl{font-size:.85rem;color:var(--mut);margin-top:3px}
+
+.confetti-wrap{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden}
+.cp{position:absolute;top:-20px;animation:fall linear forwards}
+@keyframes fall{to{top:105vh;transform:rotate(720deg) scale(.4)}}
+
+.hidden{display:none!important}
+.mt{margin-top:12px}.mb{margin-bottom:12px}
+.small-note{font-size:.82rem;color:var(--mut);font-style:italic}
+::-webkit-scrollbar{width:7px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#3a3a5a;border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr hidden" id="hdr">
+  <span class="brand">🔐 AI-PARABOLA</span>
+  <span class="team-badge" id="hdr-team"></span>
+  <div class="dots">
+    <div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div><div class="dot" id="d4"></div>
+  </div>
+  <span class="clock" id="clock">40:00</span>
+</div>
+
+<!-- ==================== INTRO ==================== -->
+<section id="s-intro" class="sc on">
+<div class="intro">
+  <div class="icon">🤖</div>
+  <h1>ESCAPE ROOM MATEMATICA</h1>
+  <p class="sub">MISSIONE: DISATTIVA AI-PARABOLA</p>
+  <div class="brief">
+    <strong>⚠️ Attenzione — Comunicazione urgente!</strong><br><br>
+    <em>AI-Parabola</em>, un'intelligenza artificiale avanzata, ha preso il controllo di vari sistemi
+    critici in tutto il mondo, usando il suo profondo intuito matematico per creare caos e disordine.<br><br>
+    La vostra missione è usare la <strong>conoscenza matematica</strong> e la <strong>capacità di ragionamento</strong>
+    per risolvere <strong>4 enigmi</strong>, disattivare AI-Parabola e <strong>salvare il mondo</strong>!<br><br>
+    🔑 <strong>Istruzioni:</strong><br>
+    • Lavorate in squadra e risolvete gli enigmi in ordine.<br>
+    • Ogni enigma risolto vi avvicina alla vittoria.<br>
+    • I suggerimenti costano <strong>30 secondi</strong> di penalità.<br>
+    • Buona fortuna, matematici! 🚀
+  </div>
+  <div class="setup">
+    <div class="fld"><label>👥 Nome della Squadra</label>
+      <input type="text" id="inp-team" placeholder="Es: I Paraboli" maxlength="30"></div>
+    <div class="fld"><label>⏱️ Tempo (minuti)</label>
+      <select id="sel-time">
+        <option value="20">20 min</option><option value="30">30 min</option>
+        <option value="40" selected>40 min</option><option value="50">50 min</option><option value="60">60 min</option>
+      </select></div>
+  </div>
+  <button class="btn btn-cy btn-big" onclick="startGame()">🚀 INIZIA LA MISSIONE</button>
+</div>
+</section>
+
+<!-- ==================== ENIGMA 1 ==================== -->
+<section id="s-e1" class="sc">
+<div class="card" style="border-color:rgba(0,229,255,.2)">
+  <div class="et"><span class="badge b-cy">E1</span><span style="color:var(--cyan)">Il Lancio del Proiettile</span></div>
+  <div class="narr">
+    Durante una rievocazione storica, una catapulta lancia un proiettile. La traiettoria segue una
+    legge parabolica. Per annientarlo dovete determinare il <strong>punto più alto</strong>
+    della traiettoria: trovate il <strong>vertice della parabola</strong>!
+  </div>
+  <div class="cols">
+    <div>
+      <div class="eq-box">$$y = -4{,}9\,t^2 + 20\,t + 1{,}5$$
+        <div class="small-note mt">$t$ = tempo (secondi), $y$ = altezza (metri)</div></div>
+      <p class="mb"><strong>Dopo quanti secondi il proiettile raggiunge l'altezza massima? Quale è questa altezza?</strong></p>
+      <div class="fr">
+        <div class="fld"><label>Tempo $t_V$ (s)</label>
+          <input type="text" id="e1t" placeholder="Es: 2.04"></div>
+        <div class="fld"><label>Altezza $y_{max}$ (m)</label>
+          <input type="text" id="e1y" placeholder="Es: 21.9"></div>
+      </div>
+      <p class="small-note mb">Usa la virgola <strong>o</strong> il punto come separatore decimale. Arrotonda a 2 decimali.</p>
+      <div class="acts">
+        <button class="btn btn-cy" id="e1btn" onclick="checkE1()">✔ Verifica</button>
+        <button class="btn btn-gh" id="h1b" onclick="showHint(1)">💡 Suggerimento (-30s)</button>
+      </div>
+      <div class="fb" id="e1fb"></div>
+      <div class="fb hint" id="e1h">💡 <strong>Suggerimento:</strong> Il vertice di $y = at^2+bt+c$ si trova in
+        $t_V = -\dfrac{b}{2a}$. Poi sostituisci $t_V$ nell'equazione per trovare $y_{max}$.</div>
+      <div class="sol" id="e1s">
+        <h4>📘 Soluzione Passo-Passo</h4>
+        <div class="stp"><strong>Passo 1 —</strong> Identifichiamo i coefficienti: $a = -4{,}9$, $b = 20$, $c = 1{,}5$</div>
+        <div class="stp"><strong>Passo 2 —</strong> Tempo del vertice: $t_V = -\dfrac{b}{2a} = -\dfrac{20}{2\times(-4{,}9)} = \dfrac{20}{9{,}8} \approx \mathbf{2{,}04}$ s</div>
+        <div class="stp"><strong>Passo 3 —</strong> Altezza massima: $y_{max} = -4{,}9 \times (2{,}04)^2 + 20 \times 2{,}04 + 1{,}5$</div>
+        <div class="stp">$= -4{,}9 \times 4{,}1616 + 40{,}8 + 1{,}5 = -20{,}39 + 40{,}8 + 1{,}5 \approx \mathbf{21{,}91}$ m</div>
+        <div class="stp">⚠️ <strong>Errore comune:</strong> Dimenticare il segno negativo di $a$ nel calcolo di $t_V$.</div>
+      </div>
+      <button class="btn btn-gr hidden mt" id="e1n" onclick="goTo('e2')">▶ Enigma Successivo</button>
+    </div>
+    <div style="display:flex;justify-content:center;align-items:flex-start;padding-top:10px">
+      <canvas id="cv1" class="graph" width="480" height="320"></canvas>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== ENIGMA 2 ==================== -->
+<section id="s-e2" class="sc">
+<div class="card" style="border-color:rgba(179,136,255,.2)">
+  <div class="et"><span class="badge b-pu">E2</span><span style="color:var(--purple)">Il Satellite</span></div>
+  <div class="narr">
+    AI-Parabola ha deviato un satellite dalla sua orbita, costringendolo su una traiettoria parabolica
+    pericolosa! Per ripristinare l'orbita, verificate quali coordinate appartengono
+    <strong>realmente</strong> alla traiettoria.
+  </div>
+  <div class="eq-box">$$y = -4{,}9\,t^2 + 20\,t + 1{,}5$$</div>
+  <p class="mb"><strong>Selezionate SOLO i punti che appartengono alla traiettoria:</strong></p>
+  <div class="opts" id="e2opts">
+    <label class="opt" id="e2optA"><input type="checkbox" id="e2A"><span><strong>A</strong>&ensp;$(1\;;\;16{,}6)$</span></label>
+    <label class="opt" id="e2optB"><input type="checkbox" id="e2B"><span><strong>B</strong>&ensp;$(2\;;\;20{,}9)$</span></label>
+    <label class="opt" id="e2optC"><input type="checkbox" id="e2C"><span><strong>C</strong>&ensp;$(3\;;\;18{,}4)$</span></label>
+    <label class="opt" id="e2optD"><input type="checkbox" id="e2D"><span><strong>D</strong>&ensp;$(4\;;\;3{,}1)$</span></label>
+    <label class="opt" id="e2optE"><input type="checkbox" id="e2E"><span><strong>E</strong>&ensp;$(5\;;\;-21)$</span></label>
+  </div>
+  <div class="acts">
+    <button class="btn btn-cy" id="e2btn" onclick="checkE2()">✔ Verifica Coordinate</button>
+    <button class="btn btn-gh" id="h2b" onclick="showHint(2)">💡 Suggerimento (-30s)</button>
+  </div>
+  <div class="fb" id="e2fb"></div>
+  <div class="fb hint" id="e2h">💡 <strong>Suggerimento:</strong> Sostituisci il valore di $t$ di ciascun punto
+    nell'equazione e confronta il risultato con la $y$ fornita. Se coincidono → il punto è sulla traiettoria!</div>
+  <div class="sol" id="e2s">
+    <h4>📘 Soluzione Passo-Passo</h4>
+    <div class="stp"><strong>A</strong> $(t=1)$: $y = -4{,}9(1)^2 + 20(1) + 1{,}5 = -4{,}9 + 20 + 1{,}5 = \mathbf{16{,}6}$ ✅</div>
+    <div class="stp"><strong>B</strong> $(t=2)$: $y = -4{,}9(4) + 20(2) + 1{,}5 = -19{,}6 + 40 + 1{,}5 = \mathbf{21{,}9} \neq 20{,}9$ ❌</div>
+    <div class="stp"><strong>C</strong> $(t=3)$: $y = -4{,}9(9) + 20(3) + 1{,}5 = -44{,}1 + 60 + 1{,}5 = \mathbf{17{,}4} \neq 18{,}4$ ❌</div>
+    <div class="stp"><strong>D</strong> $(t=4)$: $y = -4{,}9(16) + 20(4) + 1{,}5 = -78{,}4 + 80 + 1{,}5 = \mathbf{3{,}1}$ ✅</div>
+    <div class="stp"><strong>E</strong> $(t=5)$: $y = -4{,}9(25) + 20(5) + 1{,}5 = -122{,}5 + 100 + 1{,}5 = \mathbf{-21}$ ✅</div>
+    <div class="stp">✅ <strong>Risposte corrette:</strong> <strong>A, D, E</strong></div>
+    <div class="stp">⚠️ <strong>Errore comune:</strong> non elevare al quadrato $t$ prima di moltiplicare per $a$.</div>
+  </div>
+  <button class="btn btn-gr hidden mt" id="e2n" onclick="goTo('e3')">▶ Enigma Successivo</button>
+</div>
+</section>
+
+<!-- ==================== ENIGMA 3 ==================== -->
+<section id="s-e3" class="sc">
+<div class="card" style="border-color:rgba(255,145,0,.2)">
+  <div class="et"><span class="badge b-or">E3</span><span style="color:var(--orange)">Il Ponte</span></div>
+  <div class="narr">
+    AI-Parabola ha demolito il ponte sospeso verso l'antenna del centro di controllo!
+    Il ponte segue una traiettoria parabolica perfetta. Per ricostruirlo dovete trovare
+    l'<strong>equazione</strong> che lo descrive.<br><br>
+    📐 <strong>Dati:</strong> punto più alto a <strong>25 m</strong> di altezza; estensione di
+    <strong>50 m</strong> da un capo all'altro (da $x=0$ a $x=50$). Entrambi gli estremi sono a livello del suolo ($y=0$).
+  </div>
+  <div class="cols">
+    <div>
+      <p class="mb"><strong>Quale equazione descrive la forma del ponte?</strong></p>
+      <div class="opts" id="e3opts">
+        <label class="opt" id="e3optA"><input type="radio" name="e3r" value="A">
+          <span><strong>A)</strong>&ensp;$y = -\dfrac{1}{25}(x - 25)^2 + 25$</span></label>
+        <label class="opt" id="e3optB"><input type="radio" name="e3r" value="B">
+          <span><strong>B)</strong>&ensp;$y = \dfrac{1}{25}(x - 25)^2 + 25$</span></label>
+        <label class="opt" id="e3optC"><input type="radio" name="e3r" value="C">
+          <span><strong>C)</strong>&ensp;$y = -25(x - 25)^2 + 25$</span></label>
+        <label class="opt" id="e3optD"><input type="radio" name="e3r" value="D">
+          <span><strong>D)</strong>&ensp;$y = -(x - 25)^2 + 25$</span></label>
+      </div>
+      <div class="acts">
+        <button class="btn btn-cy" id="e3btn" onclick="checkE3()">✔ Verifica Equazione</button>
+        <button class="btn btn-gh" id="h3b" onclick="showHint(3)">💡 Suggerimento (-30s)</button>
+      </div>
+      <div class="fb" id="e3fb"></div>
+      <div class="fb hint" id="e3h">💡 <strong>Suggerimento:</strong> Usa la forma del vertice: $y = a(x - h)^2 + k$
+        dove $(h, k) = (25, 25)$ è il vertice. Poi imponi che $y(0) = 0$ per trovare $a$:
+        $0 = a(0-25)^2 + 25 \Rightarrow a = -\frac{25}{625} = -\frac{1}{25}$.</div>
+      <div class="sol" id="e3s">
+        <h4>📘 Soluzione Passo-Passo</h4>
+        <div class="stp"><strong>Passo 1 —</strong> Il vertice (punto più alto) è a metà del ponte: $(h, k) = (25, 25)$.</div>
+        <div class="stp"><strong>Passo 2 —</strong> Scriviamo la forma canonica: $y = a(x - 25)^2 + 25$.</div>
+        <div class="stp"><strong>Passo 3 —</strong> Il ponte tocca il suolo in $x = 0$, dunque $y(0) = 0$: $$0 = a(0 - 25)^2 + 25 = 625a + 25$$</div>
+        <div class="stp"><strong>Passo 4 —</strong> Risolviamo: $625a = -25 \Rightarrow a = -\dfrac{25}{625} = -\dfrac{1}{25}$</div>
+        <div class="stp"><strong>Passo 5 —</strong> L'equazione è: $\boxed{y = -\dfrac{1}{25}(x - 25)^2 + 25}$ → <strong>Risposta A</strong></div>
+        <div class="stp"><strong>Verifica:</strong> $y(50) = -\frac{1}{25}(25)^2 + 25 = -25 + 25 = 0$ ✅</div>
+        <div class="stp">⚠️ <strong>Errore comune:</strong> confondere il segno di $a$ (la parabola del ponte ha concavità verso il basso → $a < 0$).</div>
+      </div>
+      <button class="btn btn-gr hidden mt" id="e3n" onclick="goTo('e4')">▶ Enigma Finale!</button>
+    </div>
+    <div style="display:flex;justify-content:center;align-items:flex-start;padding-top:10px">
+      <canvas id="cv3" class="graph" width="480" height="320"></canvas>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== ENIGMA 4 (FINALE) ==================== -->
+<section id="s-e4" class="sc">
+<div class="card" style="border-color:rgba(255,51,102,.2)">
+  <div class="et"><span class="badge b-rd">EF</span><span style="color:var(--red)">L'Antenna Parabolica — Enigma Finale</span></div>
+  <div class="narr">
+    L'ultimo passo per disattivare AI-Parabola! Dovete calcolare l'<strong>angolo di elevazione</strong>
+    dell'antenna parabolica per inviare il codice di disattivazione al satellite.<br><br>
+    📐 <strong>Dati:</strong><br>
+    • Distanza orizzontale dall'antenna al satellite: <strong>300 m</strong><br>
+    • L'antenna è su un edificio alto <strong>50 m</strong><br>
+    • Il satellite è a <strong>100 m</strong> dal suolo
+  </div>
+  <div class="cols">
+    <div>
+      <p class="mb"><strong>Calcola l'angolo di elevazione dell'antenna verso il satellite (in gradi).</strong></p>
+      <p class="small-note mb">Suggerimento: pensa al dislivello tra antenna e satellite, e alla distanza orizzontale. Che funzione trigonometrica usi?</p>
+      <div class="fr">
+        <div class="fld"><label>Dislivello Δh (m)</label>
+          <input type="text" id="e4dh" placeholder="Es: 50"></div>
+        <div class="fld"><label>Angolo α (°)</label>
+          <input type="text" id="e4a" placeholder="Es: 9.46"></div>
+      </div>
+      <p class="small-note mb">Arrotonda l'angolo a 2 decimali.</p>
+      <div class="acts">
+        <button class="btn btn-rd" id="e4btn" onclick="checkE4()">🔑 INVIA CODICE DI DISATTIVAZIONE</button>
+        <button class="btn btn-gh" id="h4b" onclick="showHint(4)">💡 Suggerimento (-30s)</button>
+      </div>
+      <div class="fb" id="e4fb"></div>
+      <div class="fb hint" id="e4h">💡 <strong>Suggerimento:</strong> Il dislivello è $\Delta h = 100 - 50 = 50$ m.
+        L'angolo si calcola con $\alpha = \arctan\!\left(\dfrac{\Delta h}{d}\right) = \arctan\!\left(\dfrac{50}{300}\right)$.</div>
+      <div class="sol" id="e4s">
+        <h4>📘 Soluzione Passo-Passo</h4>
+        <div class="stp"><strong>Passo 1 —</strong> Calcoliamo il dislivello: $\Delta h = 100 - 50 = 50$ m</div>
+        <div class="stp"><strong>Passo 2 —</strong> Identifichiamo: cateto opposto = $\Delta h = 50$ m, cateto adiacente = $d = 300$ m</div>
+        <div class="stp"><strong>Passo 3 —</strong> Usiamo la tangente: $\tan(\alpha) = \dfrac{50}{300} = \dfrac{1}{6} \approx 0{,}1\overline{6}$</div>
+        <div class="stp"><strong>Passo 4 —</strong> Calcoliamo l'angolo: $\alpha = \arctan(0{,}1\overline{6}) \approx \mathbf{9{,}46°}$</div>
+        <div class="stp">✅ <strong>Risposta:</strong> Angolo di elevazione ≈ <strong>9,46°</strong></div>
+        <div class="stp">⚠️ <strong>Errore comune:</strong> usare l'altezza del satellite (100 m) anziché il dislivello (50 m). L'antenna è già a 50 m!</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center;align-items:flex-start;padding-top:10px">
+      <canvas id="cv4" class="graph" width="480" height="320"></canvas>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== VITTORIA ==================== -->
+<section id="s-win" class="sc">
+<div class="vic">
+  <div style="font-size:4rem;margin-bottom:10px">🎉🏆🎉</div>
+  <h1>MISSIONE COMPIUTA!</h1>
+  <p class="sub2">La squadra <strong id="win-team"></strong> ha disattivato AI-Parabola e <strong>salvato il mondo</strong>!</p>
+  <div class="stats">
+    <div class="stat"><div class="val" id="win-time">--:--</div><div class="lbl">Tempo Impiegato</div></div>
+    <div class="stat"><div class="val" id="win-hints">0</div><div class="lbl">Suggerimenti Usati</div></div>
+    <div class="stat"><div class="val" id="win-errs">0</div><div class="lbl">Errori Commessi</div></div>
+    <div class="stat"><div class="val" id="win-score">--</div><div class="lbl">Punteggio</div></div>
+  </div>
+  <button class="btn btn-cy btn-big mt" onclick="location.reload()">🔄 NUOVA MISSIONE</button>
+</div>
+</section>
+
+<!-- ==================== TEMPO SCADUTO ==================== -->
+<section id="s-over" class="sc">
+<div class="vic">
+  <div style="font-size:4rem;margin-bottom:10px">⏰💥</div>
+  <h1 style="color:var(--red)">TEMPO SCADUTO!</h1>
+  <p class="sub2">AI-Parabola ha vinto questa volta... Ma potete riprovare!</p>
+  <div class="stats">
+    <div class="stat"><div class="val" id="ov-solved">0/4</div><div class="lbl">Enigmi Risolti</div></div>
+    <div class="stat"><div class="val" id="ov-hints">0</div><div class="lbl">Suggerimenti Usati</div></div>
+  </div>
+  <button class="btn btn-cy btn-big mt" onclick="location.reload()">🔄 RIPROVA</button>
+</div>
+</section>
+
+<div class="confetti-wrap" id="confetti"></div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+/* -------- STATE -------- */
+let timerSec=0,timerMax=0,timerID=null,teamName='',hintsUsed=0,errorsTotal=0,solvedCount=0;
+const solved={e1:false,e2:false,e3:false,e4:false};
+
+/* -------- HELPERS -------- */
+const $=id=>document.getElementById(id);
+function parseNum(s){return parseFloat(s.replace(',','.'))}
+function approx(a,b,tol=0.15){return Math.abs(a-b)<=tol}
+function showFb(id,type,msg){const el=$(id);el.className='fb show '+type;el.innerHTML=msg}
+function hideFb(id){$(id).className='fb';$(id).innerHTML=''}
+
+function retypeMath(){if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise().catch(()=>{})}
+
+/* -------- TIMER -------- */
+function fmtTime(s){const m=Math.floor(s/60),ss=s%60;return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')}
+function tickTimer(){
+  timerSec--;
+  $('clock').textContent=fmtTime(timerSec);
+  if(timerSec<=0){clearInterval(timerID);gameOver();return}
+  $('clock').className=timerSec<60?'clock c':timerSec<180?'clock w':'clock';
+}
+function penalize(sec){timerSec=Math.max(0,timerSec-sec)}
+
+/* -------- START GAME -------- */
+function startGame(){
+  teamName=$('inp-team').value.trim()||'Squadra Alpha';
+  timerMax=parseInt($('sel-time').value)*60;
+  timerSec=timerMax;
+  $('hdr-team').textContent='👥 '+teamName;
+  $('hdr').classList.remove('hidden');
+  $('clock').textContent=fmtTime(timerSec);
+  timerID=setInterval(tickTimer,1000);
+  goTo('e1');
+}
+
+function goTo(sec){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  $('s-'+sec).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  // update dots
+  ['e1','e2','e3','e4'].forEach((e,i)=>{
+    const d=$('d'+(i+1));
+    d.className=solved[e]?'dot done':'dot';
+  });
+  const idx=['e1','e2','e3','e4'].indexOf(sec);
+  if(idx>=0&&!solved[sec]) $('d'+(idx+1)).classList.add('on');
+  // draw graphs
+  setTimeout(()=>{
+    if(sec==='e1')drawE1();
+    if(sec==='e3')drawE3();
+    if(sec==='e4')drawE4();
+    retypeMath();
+  },100);
+}
+
+/* -------- ENIGMA 1 -------- */
+function drawE1(showVertex){
+  const c=$('cv1'),ctx=c.getContext('2d');
+  const W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+  const ox=50,oy=H-40,sx=90,sy=10;
+  // axes
+  ctx.strokeStyle='#3a3a5a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ox,10);ctx.lineTo(ox,oy);ctx.lineTo(W-10,oy);ctx.stroke();
+  // labels
+  ctx.fillStyle='#8888aa';ctx.font='12px Share Tech Mono';
+  ctx.fillText('t(s)',W-30,oy+16);ctx.fillText('y(m)',ox-30,22);
+  for(let t=0;t<=5;t++){const x=ox+t*sx;ctx.fillText(t,x-3,oy+16);ctx.beginPath();ctx.moveTo(x,oy);ctx.lineTo(x,oy+5);ctx.stroke()}
+  for(let y=0;y<=25;y+=5){const yy=oy-y*sy;ctx.fillText(y,ox-30,yy+4);ctx.beginPath();ctx.moveTo(ox-3,yy);ctx.lineTo(ox,yy);ctx.stroke();
+    if(y>0){ctx.strokeStyle='rgba(255,255,255,.04)';ctx.beginPath();ctx.moveTo(ox,yy);ctx.lineTo(W-10,yy);ctx.stroke();ctx.strokeStyle='#3a3a5a'}}
+  // parabola
+  ctx.beginPath();ctx.strokeStyle='#00e5ff';ctx.lineWidth=2.5;
+  for(let t=0;t<=5;t+=0.02){
+    const y=-4.9*t*t+20*t+1.5;
+    const px=ox+t*sx,py=oy-y*sy;
+    t===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }ctx.stroke();
+  // vertex
+  if(showVertex){
+    const tv=20/9.8,yv=-4.9*tv*tv+20*tv+1.5;
+    const px=ox+tv*sx,py=oy-yv*sy;
+    ctx.fillStyle='#ff3366';ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ff3366';ctx.font='bold 13px Rajdhani';
+    ctx.fillText('V(2.04, 21.91)',px+10,py-8);
+    ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(255,51,102,.4)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,oy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(ox,py);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+function checkE1(){
+  const tv=parseNum($('e1t').value), yv=parseNum($('e1y').value);
+  if(isNaN(tv)||isNaN(yv)){showFb('e1fb','err','❌ Inserisci entrambi i valori numerici.');return}
+  const tvOk=approx(tv,2.04,0.05), yvOk=approx(yv,21.91,0.3);
+  if(tvOk&&yvOk){
+    solved.e1=true;solvedCount++;
+    showFb('e1fb','ok','✅ Perfetto! Il vertice è V(2,04 ; 21,91). Il proiettile è stato annientato!');
+    $('e1s').classList.add('show');$('e1n').classList.remove('hidden');
+    $('e1btn').disabled=true;drawE1(true);
+  } else {
+    errorsTotal++;
+    let msg='❌ Non corretto. ';
+    if(!tvOk) msg+='Controlla il tempo $t_V$. ';
+    if(!yvOk) msg+='Controlla l\'altezza $y_{max}$. ';
+    msg+='Riprova!';
+    showFb('e1fb','err',msg);retypeMath();
+  }
+}
+
+/* -------- ENIGMA 2 -------- */
+// correct: A, D, E
+function checkE2(){
+  const a=$('e2A').checked,b=$('e2B').checked,c=$('e2C').checked,d=$('e2D').checked,e=$('e2E').checked;
+  if(!a&&!b&&!c&&!d&&!e){showFb('e2fb','err','❌ Seleziona almeno un punto!');return}
+  const correct=a&&!b&&!c&&d&&e;
+  // color
+  const map={A:true,B:false,C:false,D:true,E:true};
+  if(correct){
+    solved.e2=true;solvedCount++;
+    ['A','B','C','D','E'].forEach(l=>{
+      $('e2opt'+l).classList.add(map[l]?'ok':'no');
+      $('e2'+l).disabled=true;
+    });
+    showFb('e2fb','ok','✅ Coordinate esatte! A, D, E sono sulla traiettoria. Orbita del satellite ricalcolata!');
+    $('e2s').classList.add('show');$('e2n').classList.remove('hidden');$('e2btn').disabled=true;
+  } else {
+    errorsTotal++;
+    showFb('e2fb','err','❌ Non corretto! Controlla i calcoli: sostituisci ogni $t$ e verifica la $y$. Riprova!');
+    retypeMath();
+  }
+}
+
+/* -------- ENIGMA 3 -------- */
+function drawE3(highlight){
+  const c=$('cv3'),ctx=c.getContext('2d');
+  const W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+  const ox=40,oy=H-40,sxu=(W-80)/55,syu=(H-80)/30;
+  // axes
+  ctx.strokeStyle='#3a3a5a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ox,10);ctx.lineTo(ox,oy);ctx.lineTo(W-10,oy);ctx.stroke();
+  ctx.fillStyle='#8888aa';ctx.font='12px Share Tech Mono';
+  ctx.fillText('x(m)',W-35,oy+16);ctx.fillText('y(m)',ox-30,22);
+  for(let x=0;x<=50;x+=10){const px=ox+x*sxu;ctx.fillText(x,px-6,oy+16);ctx.beginPath();ctx.moveTo(px,oy);ctx.lineTo(px,oy+5);ctx.stroke()}
+  for(let y=0;y<=25;y+=5){const py=oy-y*syu;ctx.fillText(y,ox-28,py+4);ctx.beginPath();ctx.moveTo(ox-3,py);ctx.lineTo(ox,py);ctx.stroke();
+    if(y>0){ctx.strokeStyle='rgba(255,255,255,.04)';ctx.beginPath();ctx.moveTo(ox,py);ctx.lineTo(W-10,py);ctx.stroke();ctx.strokeStyle='#3a3a5a'}}
+  // bridge
+  ctx.beginPath();ctx.strokeStyle='#ff9100';ctx.lineWidth=3;
+  for(let x=0;x<=50;x+=0.3){
+    const y=-(1/25)*Math.pow(x-25,2)+25;
+    const px=ox+x*sxu,py=oy-y*syu;
+    x===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }ctx.stroke();
+  // supports
+  ctx.strokeStyle='rgba(255,145,0,.3)';ctx.lineWidth=2;
+  [0,50].forEach(x=>{const px=ox+x*sxu;ctx.beginPath();ctx.moveTo(px,oy);ctx.lineTo(px,oy);ctx.stroke()});
+  // vertex
+  if(highlight){
+    const px=ox+25*sxu,py=oy-25*syu;
+    ctx.fillStyle='#00ff41';ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#00ff41';ctx.font='bold 12px Rajdhani';ctx.fillText('V(25, 25)',px+8,py-8);
+    // points at 0 and 50
+    [0,50].forEach(x=>{
+      const px2=ox+x*sxu;
+      ctx.fillStyle='#ff3366';ctx.beginPath();ctx.arc(px2,oy,5,0,Math.PI*2);ctx.fill();
+    });
+  }
+}
+
+function checkE3(){
+  const sel=document.querySelector('input[name="e3r"]:checked');
+  if(!sel){showFb('e3fb','err','❌ Seleziona una risposta!');return}
+  if(sel.value==='A'){
+    solved.e3=true;solvedCount++;
+    $('e3optA').classList.add('ok');
+    ['B','C','D'].forEach(l=>$('e3opt'+l).classList.add('no'));
+    document.querySelectorAll('input[name="e3r"]').forEach(r=>r.disabled=true);
+    showFb('e3fb','ok','✅ Esatto! $y = -\\frac{1}{25}(x-25)^2 + 25$. Il ponte è ricostruito!');
+    $('e3s').classList.add('show');$('e3n').classList.remove('hidden');$('e3btn').disabled=true;
+    drawE3(true);retypeMath();
+  } else {
+    errorsTotal++;
+    $('e3opt'+sel.value).classList.add('no');
+    showFb('e3fb','err','❌ Non è questa! Ricontrolla: la parabola ha vertice in $(25, 25)$ e passa per $(0, 0)$. Riprova!');
+    retypeMath();
+  }
+}
+
+/* -------- ENIGMA 4 -------- */
+function drawE4(showAngle){
+  const c=$('cv4'),ctx=c.getContext('2d');
+  const W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+  const ground=H-50,leftX=70,rightX=W-60;
+  const totalW=rightX-leftX;
+  const buildH=totalW*50/300*1.5, satH=totalW*100/300*1.5;
+  const buildTop=ground-buildH, satTop=ground-satH;
+  // ground
+  ctx.strokeStyle='#3a3a5a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(30,ground);ctx.lineTo(W-10,ground);ctx.stroke();
+  // building
+  ctx.fillStyle='rgba(0,229,255,.1)';ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;
+  ctx.fillRect(leftX-20,buildTop,40,buildH);ctx.strokeRect(leftX-20,buildTop,40,buildH);
+  ctx.fillStyle='#00e5ff';ctx.font='bold 12px Rajdhani';ctx.fillText('Antenna',leftX-22,buildTop-18);ctx.fillText('50 m',leftX-15,buildTop+buildH/2+4);
+  // satellite
+  ctx.fillStyle='rgba(179,136,255,.15)';ctx.strokeStyle='var(--purple)';ctx.lineWidth=2;
+  ctx.fillStyle='#b388ff';ctx.font='22px serif';ctx.fillText('🛰️',rightX-12,satTop-5);
+  ctx.fillStyle='#b388ff';ctx.font='bold 12px Rajdhani';ctx.fillText('Satellite',rightX-18,satTop-22);ctx.fillText('100 m',rightX+10,satTop+20);
+  // height lines
+  ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(rightX,ground);ctx.lineTo(rightX,satTop);ctx.stroke();
+  ctx.setLineDash([]);
+  // distance label
+  ctx.fillStyle='#8888aa';ctx.font='12px Share Tech Mono';
+  ctx.fillText('300 m',(leftX+rightX)/2-15,ground+20);
+  // signal line
+  if(showAngle){
+    ctx.setLineDash([6,4]);ctx.strokeStyle='#00ff41';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(leftX,buildTop);ctx.lineTo(rightX,satTop);ctx.stroke();
+    ctx.setLineDash([]);
+    // horizontal from antenna
+    ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(255,255,255,.2)';
+    ctx.beginPath();ctx.moveTo(leftX,buildTop);ctx.lineTo(rightX,buildTop);ctx.stroke();
+    ctx.setLineDash([]);
+    // delta h
+    ctx.strokeStyle='rgba(255,145,0,.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(rightX,buildTop);ctx.lineTo(rightX,satTop);ctx.stroke();
+    ctx.fillStyle='#ff9100';ctx.font='bold 12px Rajdhani';ctx.fillText('Δh=50m',rightX+5,buildTop-(buildTop-satTop)/2+4);
+    // angle arc
+    ctx.strokeStyle='#00ff41';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(leftX,buildTop,40,0,-Math.atan(50/300),true);ctx.stroke();
+    ctx.fillStyle='#00ff41';ctx.font='bold 14px Rajdhani';ctx.fillText('α≈9.46°',leftX+45,buildTop-5);
+  } else {
+    ctx.setLineDash([6,4]);ctx.strokeStyle='rgba(255,51,102,.4)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(leftX,buildTop);ctx.lineTo(rightX,satTop);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='var(--red)';ctx.font='bold 13px Rajdhani';ctx.fillText('α = ?',(leftX+50),buildTop-12);
+  }
+}
+
+function checkE4(){
+  const dh=parseNum($('e4dh').value), ang=parseNum($('e4a').value);
+  if(isNaN(dh)||isNaN(ang)){showFb('e4fb','err','❌ Inserisci entrambi i valori numerici.');return}
+  const dhOk=approx(dh,50,1), angOk=approx(ang,9.46,0.3);
+  if(dhOk&&angOk){
+    solved.e4=true;solvedCount++;
+    showFb('e4fb','ok','✅ CODICE DI DISATTIVAZIONE INVIATO. Angolo α ≈ 9,46°. AI-Parabola è stata disattivata!');
+    $('e4s').classList.add('show');$('e4btn').disabled=true;
+    drawE4(true);
+    setTimeout(()=>gameWin(),2500);
+  } else {
+    errorsTotal++;
+    let msg='❌ Non corretto. ';
+    if(!dhOk) msg+='Controlla il dislivello! ';
+    if(!angOk) msg+='Controlla l\'angolo. Usa $\\alpha = \\arctan(\\Delta h / d)$. ';
+    msg+='Riprova!';
+    showFb('e4fb','err',msg);retypeMath();
+  }
+}
+
+/* -------- HINTS -------- */
+function showHint(n){
+  const el=$('e'+n+'h');
+  if(el.classList.contains('show'))return;
+  if(!confirm('Usare un suggerimento costa 30 secondi di penalità. Procedere?'))return;
+  hintsUsed++;penalize(30);
+  el.classList.add('show');
+  $('h'+n+'b').disabled=true;
+  retypeMath();
+}
+
+/* -------- GAME END -------- */
+function gameWin(){
+  clearInterval(timerID);
+  const elapsed=timerMax-timerSec;
+  $('win-team').textContent=teamName;
+  $('win-time').textContent=fmtTime(elapsed);
+  $('win-hints').textContent=hintsUsed;
+  $('win-errs').textContent=errorsTotal;
+  // score: base 1000, -50/hint, -30/error, bonus for time
+  const score=Math.max(0,1000-hintsUsed*50-errorsTotal*30+Math.floor((timerSec/timerMax)*500));
+  $('win-score').textContent=score;
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  $('s-win').classList.add('on');
+  launchConfetti();
+}
+
+function gameOver(){
+  clearInterval(timerID);
+  $('ov-solved').textContent=solvedCount+'/4';
+  $('ov-hints').textContent=hintsUsed;
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  $('s-over').classList.add('on');
+}
+
+/* -------- CONFETTI -------- */
+function launchConfetti(){
+  const wrap=$('confetti');
+  const colors=['#00e5ff','#00ff41','#ff3366','#ff9100','#b388ff','#ffeb3b','#ffffff'];
+  for(let i=0;i<120;i++){
+    const el=document.createElement('div');el.classList.add('cp');
+    el.style.left=Math.random()*100+'%';
+    el.style.width=el.style.height=(6+Math.random()*10)+'px';
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.borderRadius=Math.random()>.5?'50%':'2px';
+    el.style.animationDuration=(2+Math.random()*3)+'s';
+    el.style.animationDelay=(Math.random()*2)+'s';
+    el.style.opacity=0.7+Math.random()*0.3;
+    wrap.appendChild(el);
+  }
+  setTimeout(()=>{wrap.innerHTML=''},7000);
+}
+
+/* -------- CHECKBOX STYLE -------- */
+document.querySelectorAll('.opt').forEach(opt=>{
+  opt.addEventListener('click',function(e){
+    const inp=this.querySelector('input');
+    if(inp.disabled)return;
+    if(e.target!==inp){/* toggle handled by label */}
+    setTimeout(()=>{
+      this.classList.toggle('sel',inp.checked);
+    },10);
+  });
+});
+document.querySelectorAll('input[name="e3r"]').forEach(inp=>{
+  inp.addEventListener('change',()=>{
+    document.querySelectorAll('#e3opts .opt').forEach(o=>o.classList.remove('sel'));
+    inp.closest('.opt').classList.add('sel');
+  });
+});
+</script>
+</body>
+</html>
